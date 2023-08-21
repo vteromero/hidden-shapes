@@ -3,16 +3,6 @@ function _init()
   cartdata"vteromero_hiddenshapes_1_0_0"
   colorpals={
     {
-      name="LIGHT",
-      title=split"7,6,14,13,1,6,1,2",
-      bg=split"6,13,7",
-      ui=split"7,14,13,6,9",
-      mnu=split"7,6,13,13,14,1",
-      ptr=14,
-      tri=0x1d,
-      goal=split"8,8,9,9,11,11",
-      trail=split"14,13,5"
-    },{
       name="DARK",
       title=split"0,1,2,13,6,1,6,12",
       bg=split"1,0,5",
@@ -22,6 +12,16 @@ function _init()
       tri=0xd7,
       goal=split"8,8,9,9,11,11",
       trail=split"12,13,5"
+    },{
+      name="LIGHT",
+      title=split"7,6,14,13,1,6,1,2",
+      bg=split"6,13,7",
+      ui=split"7,14,13,6,9",
+      mnu=split"7,6,13,13,14,1",
+      ptr=14,
+      tri=0x1d,
+      goal=split"8,8,9,9,11,11",
+      trail=split"14,13,5"
     },
   }
   colorpalidx=1
