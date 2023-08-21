@@ -1,6 +1,6 @@
 function _init()
-  version="V1.0.0"
-  cartdata"vteromero_hiddenshapes_1_0_0"
+  version="V1.0.1"
+  cartdata"vteromero_hiddenshapes_1_0_1"
   colorpals={
     {
       name="DARK",
