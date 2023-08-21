@@ -233,30 +233,48 @@ end
 function init_lvlscale()
   init_hud(2,"scale","🅾️mode","⬆️⬇️scale")
   xbtn=btn_handler(5,noop,check_goal)
+  scmage,scage,scf0,scf1,scpts=10,0,0,0,{}
 end
 
 function update_lvlscale()
   timer=inc_timer(timer)
-  if btnp(2) then
-    scale_index=min(scale_index+1,#scale_values)
+  if btnp(2) and scale_index<#scale_values then
+    start_scani(scale_values[scale_index],scale_values[scale_index+1])
+    scale_index+=1
     update_points()
   end
-  if btnp(3) then
-    scale_index=max(scale_index-1,1)
+  if btnp(3) and scale_index>1 then
+    start_scani(scale_values[scale_index],scale_values[scale_index-1])
+    scale_index-=1
     update_points()
   end
   if btnp(4) then
     set_mode("lvlrotate")
   end
   update_btn(xbtn)
+  update_scani()
   update_hud()
   update_background()
 end
 
 function draw_lvlscale()
   draw_background()
-  draw_triangles()
+  draw_triangles(scage>0 and scpts or points)
   draw_hud(xbtn)
+end
+
+function start_scani(f0,f1)
+  scage,scf0,scf1=scmage,f0,f1
+  scpts=transform_points(initial_points,rotate_values[rotate_index],f0)
+end
+
+function update_scani()
+  if scage>0 then
+    scage-=1
+    local t=(scmage-scage)/scmage
+    local f=lerp(scf0,scf1,easeoutquart(t))
+    scpts=transform_points(initial_points,rotate_values[rotate_index],f)
+  end
 end
 
 -----------------
@@ -265,17 +283,17 @@ end
 function init_lvlrotate()
   init_hud(3,"rotate","🅾️mode","⬆️⬇️rotate")
   xbtn=btn_handler(5,noop,check_goal)
+  rotmage,rotage,rotang0,rotang1,rotpts=10,0,0,0,{}
 end
 
 function update_lvlrotate()
   timer=inc_timer(timer)
-  if btnp(2) then
-    rotate_index=rotir(rotate_index,#rotate_values)
+  if btnp(2) or btnp(3) then
+    local previdx=rotate_index
+    local rotifn=btnp(2) and rotir or rotil
+    rotate_index=rotifn(rotate_index,#rotate_values)
     update_points()
-  end
-  if btnp(3) then
-    rotate_index=rotil(rotate_index,#rotate_values)
-    update_points()
+    start_rotani(rotate_values[previdx],rotate_values[rotate_index],btnp(2))
   end
   if btnp(4) then
     if can_move() then
@@ -285,19 +303,39 @@ function update_lvlrotate()
     end
   end
   update_btn(xbtn)
+  update_rotani()
   update_hud()
   update_background()
 end
 
 function draw_lvlrotate()
   draw_background()
-  draw_triangles()
+  draw_triangles(rotage>0 and rotpts or points)
   draw_hud(xbtn)
 end
 
 function can_move()
   local w,h=world.x1-world.x0+1,world.y1-world.y0+1
   return w>128 or h>128
+end
+
+function start_rotani(ang0,ang1,isup)
+  rotage=rotmage
+  if isup then
+    rotang0,rotang1=ang0,ang1<ang0 and ang1+1 or ang1
+  else
+    rotang0,rotang1=ang0<ang1 and ang0+1 or ang0,ang1
+  end
+  rotpts=transform_points(initial_points,ang0,scale_values[scale_index])
+end
+
+function update_rotani()
+  if rotage>0 then
+    rotage-=1
+    local t=(rotmage-rotage)/rotmage
+    local ang=lerp(rotang0,rotang1,easeoutquart(t))
+    rotpts=transform_points(initial_points,ang,scale_values[scale_index])
+  end
 end
 
 ---------------
@@ -540,10 +578,10 @@ function get_tripoints(tri,points)
   return points[tri.points[1]],points[tri.points[2]],points[tri.points[3]]
 end
 
-function draw_triangles()
+function draw_triangles(pts)
   local wx,wy=world.x,world.y
   for tr in all(triangles) do
-    local p1,p2,p3=get_tripoints(tr, points)
+    local p1,p2,p3=get_tripoints(tr, pts or points)
     if tr.selected then
       trifill(p1.x-wx,p1.y-wy,p2.x-wx,p2.y-wy,p3.x-wx,p3.y-wy,colors.ptr)
     else
