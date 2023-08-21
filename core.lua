@@ -59,9 +59,10 @@ function dist(x0,y0,x1,y1)
 end
 
 function rotate(x,y,cx,cy,angle)
-  local a=angle+atan2(x-cx,y-cy)
-  local d=dist(cx,cy,x,y)
-  return cx+cos(a)*d,cy+sin(a)*d
+  x-=cx
+  y-=cy
+  local c,s=cos(angle),-sin(angle)
+  return cx+x*c-y*s,cy+x*s+y*c
 end
 
 function scale(x,y,cx,cy,factor)
